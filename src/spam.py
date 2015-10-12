@@ -58,7 +58,6 @@ def detect_not_spam(line):
 calls = os.listdir('call_all')
 for call in calls:
     #start = time.time()
-
     with open('call_all/' + call) as calldata:
         newcall = open('call_f/' + call, 'w')
         newcall.write(calldata.readline())  # write header
