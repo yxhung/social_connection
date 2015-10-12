@@ -3,17 +3,21 @@ __author__ = 'yxhung'
 import os
 import csv
 import time
+
 DIR_WHOSCALL = '../mmnas2/yaxuan/whoscall'
 os.chdir(DIR_WHOSCALL)
-#os.chdir('/Users/yxhung/Dropbox/workspace/whoscall_local')
+
+
+# os.chdir('/Users/yxhung/Dropbox/workspace/whoscall_local')
 
 
 
 def listdir_fullpath(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
 
+
 def listdir_pattern(d, pattern):
-    return [os.path.join(d,f) for f in os.listdir(d) if pattern in f]
+    return [os.path.join(d, f) for f in os.listdir(d) if pattern in f]
 
 
 spams = {}
@@ -25,7 +29,7 @@ try:
         with open(each_spam, newline='') as data_spam:
             reader = csv.reader(data_spam, delimiter=',')
             next(reader)  # skip header row
-            #spam = {rows[2]:rows[3] for rows in reader}
+            # spam = {rows[2]:rows[3] for rows in reader}
 
             for line in reader:
                 lnum, ctr, md5num, ct = line
@@ -36,10 +40,9 @@ except IOError:
     print('data missing')
 
 
-
 def detect_not_spam(line):
     l = line.split(',')
-    if(len(l) != 17):
+    if (len(l) != 17):
         return False
     ctr = l[11]
     local_num = l[10]
@@ -52,39 +55,18 @@ def detect_not_spam(line):
         return False
 
 
-
 calls = os.listdir('call_all')
 for call in calls:
-start = time.time()
+    #start = time.time()
 
-with open('call_all/'+ call) as calldata:
-    newcall = open('call_f/' + call, 'w')
-    newcall.write(calldata.readline())   # write header
-    for line in calldata:
+    with open('call_all/' + call) as calldata:
+        newcall = open('call_f/' + call, 'w')
+        newcall.write(calldata.readline())  # write header
+        for line in calldata:
+            if detect_not_spam(line):
+                newcall.write(line)
+        newcall.close()
 
-        if detect_not_spam(line):
-            newcall.write(line)
-        """
-        l = line.split(',')
-        if(len(l) != 17):
-            next()
-
-        ctr = l[11]
-        local_num = l[10]
-        remote_num = l[2]
-        if spams.get(ctr) is None:
-            newcall.write(line)
-            next()
-        if spams[ctr].get(local_num) is None and spams[ctr].get(remote_num) is None:
-        #if (local_num not in spams[ctr]) & (remote_num not in spams[ctr]):
-            newcall.write(line)
-            #print(line)
-        """
-    newcall.close()
-
-done = time.time()
-elapsed = done - start
-print(elapsed)
-
-
-
+    #done = time.time()
+    #elapsed = done - start
+    #print(elapsed)
