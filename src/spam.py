@@ -4,7 +4,7 @@ import os
 import csv
 import time
 
-DIR_WHOSCALL = '../mmnas2/yaxuan/whoscall'
+DIR_WHOSCALL = '/home/yaxuan/mmnas2/yaxuan/whoscall'
 os.chdir(DIR_WHOSCALL)
 
 
@@ -56,9 +56,49 @@ def detect_not_spam(line):
 
 
 calls = os.listdir('call_all')
+calls.sort()
+
+o1t1 = 0
+o1t2 = 0
+o1t3 = 0
+o1t4 = 0
+
+o2t1 = 0
+o2t2 = 0
+o2t3 = 0
+
+o3t1 = 1
+o3t2 = 0
+o3t3 = 0
+
+if o1t1:
+    calls = calls[4:10]
+if o1t2:
+    calls = calls[11:20]
+if o1t3:
+    calls = calls[21:30]
+if o1t4:
+    calls = calls[32:40]
+
+if o2t1:
+    calls = calls[41:50]
+if o2t2:
+    calls = calls[52:60]
+if o2t3:
+    calls = calls[61:70]
+
+if o3t1:
+    calls = calls[71:80]
+if o3t2:
+    calls = calls[82:90]
+if o3t3:
+    calls = calls[91:99]
+
 for call in calls:
+
     #start = time.time()
     with open('call_all/' + call) as calldata:
+        print(call)
         newcall = open('call_f/' + call, 'w')
         newcall.write(calldata.readline())  # write header
         for line in calldata:

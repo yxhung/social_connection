@@ -1,0 +1,16 @@
+[DEFAULT]
+o1t1 = 1
+o1t2 = 0
+o1t3 = 0
+o1t4 = 0
+
+o2t1 = 0
+o2t2 = 0
+o2t3 = 0
+
+o3t1 = 0
+o3t2 = 0
+o3t3 = 0
+
+srv.no = 1
+thd.no = 1
