@@ -7,15 +7,15 @@ import time
 DIRWHOSCALL = '/home/yaxuan/mmnas2/yaxuan/whoscall'
 os.chdir(DIRWHOSCALL)
 
-def listdir_fullpath(d):
+def listDirFull(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
 
 
-def listdir_pattern(d, pattern):
+def listDirPattern(d, pattern):
     return [os.path.join(d, f) for f in os.listdir(d) if pattern in f]
 
 
-def detect_not_spam(line):
+def detectNotSpam(line):
     l = line.split(',')
     if (len(l) != 17):
         return False
@@ -29,9 +29,17 @@ def detect_not_spam(line):
     else:
         return False
 
+def strToBool(s):
+    if s == 'True':
+         return True
+    elif s == 'False':
+         return False
+    else:
+         raise ValueError # evil ValueError that doesn't tell you what the wrong value was
+
 # 1 create the spam dic
 spams = {}
-spam_dirs = listdir_fullpath('call_spam')
+spam_dirs = listDirFull('call_spam')
 try:
     for each_spam in spam_dirs:
 
@@ -96,15 +104,15 @@ if o3t2:
 if o3t3:
     partCalls = calls[90:99]
 
-for call in partCalls:
 
+for call in partCalls:
     #start = time.time()
     with open('call_all/' + call) as calldata:
         print(call)
         newcall = open('call_f/' + call, 'w')
         newcall.write(calldata.readline())  # write header
         for line in calldata:
-            if detect_not_spam(line):
+            if detectNotSpam(line):
                 newcall.write(line)
         newcall.close()
 
