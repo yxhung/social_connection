@@ -2,7 +2,9 @@ __author__ = 'yxhung'
 import os
 import csv
 import time
-os.chdir('../mmnas2/yaxuan/whoscall')
+
+DIRWHOSCALL = '/home/yaxuan/mmnas2/yaxuan/whoscall'
+os.chdir(DIRWHOSCALL)
 # list all country code
 ctrs = []
 with open("country_code_all.txt") as data:
@@ -16,21 +18,31 @@ with open('call_all/call_20150501.csv') as calldata:
 # open file for all country f1 = open("cty_cd", w)
 od = {} #open file descriptor
 for ctr in ctrs:
-    od[ctr] = open('call_ctr/'+ ctr + '.csv', 'w')
-    od[ctr].write(header)
+    od[ctr] = open('call_ctr/'+ ctr + '.csv', 'a')
+    # od[ctr].write(header)
     #print(od[ctr])
     #open(ctr+'.csv', 'w')
 
 # read filter data line by line
-call_filter = os.listdir('call_f')
-for file in call_filter:
-    with open('call_f/'+file) as calldata:
-        calldata.readline() #skip header
-        for line in calldata:
+calls = os.listdir('call_f')
+calls.sort()
+partCalls = calls[0:30]
+
+for call in partCalls:
+    # start = time.time()
+    with open('call_f/'+ call) as callData:
+        print(call + ', Start!')
+        callData.readline() #skip header
+        for line in callData:
             l = line.split(',')
             ctr = l[11]
+            if od.get(ctr) is None:
+                continue
             od[ctr].write(line)
-            #print(line, file = od[ctr])
+        print('Done!')
+    # done = time.time()
+    # elapsed = done - start
+    # print(elapsed)
 
 # close file for all country
 for ctr in ctrs:

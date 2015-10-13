@@ -1,5 +1,5 @@
 [DEFAULT]
-o1t1 = True
+o1t1 = False
 o1t2 = False
 o1t3 = False
 o1t4 = False
@@ -10,5 +10,5 @@ o2t3 = False
 
 o3t1 = False
 o3t2 = False
-o3t3 = False
+o3t3 = True
 

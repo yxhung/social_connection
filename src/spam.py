@@ -57,6 +57,7 @@ try:
 except IOError:
     print('data missing')
 
+print('Create spam list, Done!')
 
 
 
@@ -81,40 +82,43 @@ o3t1 = config['DEFAULT']['o3t1']
 o3t2 = config['DEFAULT']['o3t2']
 o3t3 = config['DEFAULT']['o3t3']
 
-if o1t1:
+if strToBool(o1t1):
     partCalls = calls[0:10]
-if o1t2:
+if strToBool(o1t2):
     partCalls = calls[10:20]
-if o1t3:
+if strToBool(o1t3):
     partCalls = calls[20:30]
-if o1t4:
+if strToBool(o1t4):
     partCalls = calls[30:40]
 
-if o2t1:
+if strToBool(o2t1):
     partCalls = calls[40:50]
-if o2t2:
+if strToBool(o2t2):
     partCalls = calls[50:60]
-if o2t3:
+if strToBool(o2t3):
     partCalls = calls[60:70]
 
-if o3t1:
+if strToBool(o3t1):
     partCalls = calls[70:80]
-if o3t2:
+if strToBool(o3t2):
     partCalls = calls[80:90]
-if o3t3:
+if strToBool(o3t3):
     partCalls = calls[90:99]
 
+print('Set the part files, Done!')
 
+# read origin data line by line and filter the spam num
 for call in partCalls:
     #start = time.time()
     with open('call_all/' + call) as calldata:
-        print(call)
+        print(call + ', Start!')
         newcall = open('call_f/' + call, 'w')
         newcall.write(calldata.readline())  # write header
         for line in calldata:
             if detectNotSpam(line):
                 newcall.write(line)
         newcall.close()
+        print('Done!')
 
     #done = time.time()
     #elapsed = done - start
