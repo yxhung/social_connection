@@ -18,17 +18,18 @@ with open('call_all/call_20150501.csv') as calldata:
 # open file for all country f1 = open("cty_cd", w)
 od = {} #open file descriptor
 for ctr in ctrs:
-    od[ctr] = open('call_ctr/'+ ctr + '.csv', 'a')
+    od[ctr] = open('call_ctr_all/'+ ctr + '.csv', 'a')
     # od[ctr].write(header)
+    #print(od[ctr])
     #print(od[ctr])
     #open(ctr+'.csv', 'w')
 
 # read filter data line by line
 calls = os.listdir('call_f')
 calls.sort()
-partCalls = calls[0:30]
+#partCalls = calls[0:30]
 
-for call in partCalls:
+for call in calls:
     # start = time.time()
     with open('call_f/'+ call) as callData:
         print(call + ', Start!')
