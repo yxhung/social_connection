@@ -1,13 +1,12 @@
 __author__ = 'yxhung'
 import os
 import json
-import urllib
 import urllib.request
 import urllib.error
 from urllib.error import URLError, HTTPError
 os.chdir('../../whoscall')
-# query url setting
 
+# query url setting
 geoUrl = 'http://nominatim.openstreetmap.org/reverse'
 cidUrl = 'https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyCDlo0xkOqsGUZ13d83ve7YNiZq3AQmQWw'
 
@@ -30,6 +29,7 @@ def queryCoordinate(cid, lac, mnc, mcc):
     # response = resp.read().decode('utf8')
     # response = json.loads(response)
     # (latitude, longitude) = response.get('location').get('lat'), response.get('location').get('lng')
+    # return (latitude, longitude)
     response = {}
     try:
         resp = urllib.request.urlopen(req)
@@ -40,7 +40,7 @@ def queryCoordinate(cid, lac, mnc, mcc):
         response = json.loads(response)
     finally:
         return response
-        # return location
+
 
 
 # response = {}
@@ -84,53 +84,88 @@ def queryCoordinate(cid, lac, mnc, mcc):
 def revGeolocate(latitude, longitude):
     url = '%s?format=json&accept-language=en-US&email=yxhung@gmail.com' \
           '&lat=%s&lon=%s' % (geoUrl, str(latitude), str(longitude))
-    response = urllib.request.urlopen(url).read().decode('utf8')
-    response = json.loads(response)
-    address = response['address']
-    (ccd, ctr, sta, std, reg, cty, cit, ctd) = (address.get('country_code'),
-                                            address.get('country'),
-                                            address.get('state'),
-                                            address.get('state_district'),
-                                            address.get('region'),
-                                            address.get('county'),
-                                            address.get('city'),
-                                            address.get('city_district'))
-    return ccd, ctr, sta, std, reg, cty, cit, ctd
+    # response = urllib.request.urlopen(url).read().decode('utf8')
+    # response = json.loads(response)
+    # address = response['address']
+    # (ccd, ctr, sta, std, reg, cty, cit, ctd) = (address.get('country_code'),
+    #                                         address.get('country'),
+    #                                         address.get('state'),
+    #                                         address.get('state_district'),
+    #                                         address.get('region'),
+    #                                         address.get('county'),
+    #                                         address.get('city'),
+    #                                         address.get('city_district'))
+    #
+    # return ccd, ctr, sta, std, reg, cty, cit, ctd
+    response = {}
+    try:
+        resp = urllib.request.urlopen(url)
+    except HTTPError as e:
+        print('Error code: ', e.code, e.reason)
+    else:
+        response = resp.read().decode('utf8')
+        response = json.loads(response)
+    finally:
+        return response
 
+
+def writeFile(l, latitude, longitude, ccd, ctr, sta, std, reg, cty, cit, ctd, file):
+    l.extend((latitude, longitude, ccd, ctr, sta, std, reg, cty, cit, ctd))
+    newLine = ",".join(map(str, l))
+    file.write(newLine + '\n')
 
 
 header = 'mcc,mnc,lac,cid,lat,lon,ccd,ctr,sta,std,reg,cty,cit,ctd'
 cidFiles = os.listdir('uiqCid')
 cidFiles.sort()
 for cidFile in cidFiles:
-    with open('uiqCid/'+ cidFile) as cidData:
-        print(cidFile + ', Start!')
-        cidData.readline() #skip header
+with open('uiqCid/'+ cidFile) as cidData:
+    print(cidFile + ', Start!')
+    cidData.readline() #skip header
 
-        corData = open('uiqCidCord/'+ cidFile, 'w')
-        corData.write(header+'\n')
+    corData = open('uiqCidCord/'+ cidFile, 'w')
+    corData.write(header+'\n')
+    i = 0
+    for line in cidData:
+        l = line.rstrip('\n').split(',')
 
-        for line in cidData:
-            l = line.rstrip('\n').split(',')
-            print(l)
-            (mcc, mnc, lac, cid) = l
-            # query coordinate
-            # (latitude, longitude) = queryCoordinate(cid, lac, mnc, mcc)
-            response = queryCoordinate(cid, lac, mnc, mcc)
-            if len(response) == 0:
-                continue
+        # reset
+        latitude = longitude = ccd = ctr = sta = std = reg = cty = cit = ctd = None
 
-            (latitude, longitude) = response.get('location').get('lat'), response.get('location').get('lng')
-            print(latitude, longitude)
+        (mcc, mnc, lac, cid) = l
+        # query coordinate
+        # (latitude, longitude) = queryCoordinate(cid, lac, mnc, mcc)
+        crdResp = queryCoordinate(cid, lac, mnc, mcc)
+        if len(crdResp) == 0:
+            writeFile(l, latitude, longitude, ccd, ctr, sta, std, reg, cty, cit, ctd, corData)
+            continue
 
-            # reverse geocoding
-            (ccd, ctr, sta, std, reg, cty, cit, ctd) = revGeolocate(latitude, longitude)
-            print(ccd, ctr)
+        (latitude, longitude) = crdResp.get('location').get('lat'), crdResp.get('location').get('lng')
+        print(latitude, longitude)
 
-            l.extend((latitude, longitude, ccd, ctr, sta, std, reg, cty, cit, ctd))
-            newLine = ",".join(map(str, l))
-            corData.write(newLine + '\n')
+        # reverse geocoding
+        # (ccd, ctr, sta, std, reg, cty, cit, ctd) = revGeolocate(latitude, longitude)
+        addResp = revGeolocate(latitude, longitude)
+        if len(crdResp) == 0:
+            writeFile(l, latitude, longitude, ccd, ctr, sta, std, reg, cty, cit, ctd, corData)
+            continue
 
-        corData.close()
+        address = addResp['address']
+        (ccd, ctr, sta, std, reg, cty, cit, ctd) = (address.get('country_code'),
+                                        address.get('country'),
+                                        address.get('state'),
+                                        address.get('state_district'),
+                                        address.get('region'),
+                                        address.get('county'),
+                                        address.get('city'),
+                                        address.get('city_district'))
 
-        print(cidFile + ', Done!')
+        print(ccd, ctr)
+
+        l.extend((latitude, longitude, ccd, ctr, sta, std, reg, cty, cit, ctd))
+        newLine = ",".join(map(str, l))
+        corData.write(newLine + '\n')
+
+    corData.close()
+
+    print(cidFile + ', Done!')
