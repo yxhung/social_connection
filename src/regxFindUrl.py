@@ -1,10 +1,13 @@
 __author__ = 'yxhung'
-import urllib.request
+
 import requests
 from bs4 import BeautifulSoup
 import os
 import shutil
+
+
 os.chdir('../../whoscall/openCellId')
+
 global dump
 
 def download_file(url):
@@ -18,8 +21,8 @@ def save_file(fn):
         shutil.copyfileobj(dump, location)
     del dump
 
+# 1. download the database from OpenCellId
 url = 'http://opencellid.org/downloads/?apiKey=db112c9c-0b36-4573-85d6-cfff827bbf35'
-# html = urllib.request.urlopen(url).read()
 html = requests.get(url).text
 soup = BeautifulSoup(html)
 all_links = soup.findAll('a', href=True)
@@ -29,4 +32,4 @@ for link in all_links[2:79]:
     download_file(url)
     fn = link['href'].split('=')[2]
     save_file(fn)
-    # urllib.request.urlopen(link['href']).read()
+
