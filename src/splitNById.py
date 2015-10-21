@@ -4,14 +4,12 @@ import os
 import shutil
 os.chdir('../../whoscall')
 # original file => N files
-# ogFiles = set('TW', 'BR', 'HK', 'KR')
-# ogFile = 'TW'
-# N = 200
 
 header = 'time_call_end,local_uid,remote_number,remote_is_contact,' \
          'call_direction,call_is_missed,call_duration,' \
          'remote_country_code,remote_number_prefix,remote_type,' \
-         'local_number,local_country_code,local_number_prefix,mcc,mnc,lac,cid'
+         'local_number,local_country_code,local_number_prefix,mcc,mnc,lac,cid\n'
+
 
 def splitN(src, N):
     # open N files for splitting big file
@@ -19,9 +17,18 @@ def splitN(src, N):
     if not os.path.exists('call_ctr_n/'+ ogFile):
         os.makedirs('call_ctr_n/'+ ogFile)
     if N == 1:
-        shutil.copyfile(src, 'call_ctr_n/'+ ogFile +'/'+ ogFile + '.csv')
+        # shutil.copyfile(src, 'call_ctr_n/'+ ogFile +'/'+ ogFile + '.csv')
+        with open(src) as callData:
+            callDataCheck = open('call_ctr_n/'+ ogFile +'/'+ ogFile + '.csv', 'w')
+            callDataCheck.write(callData.readline()) #skip header
+            for line in callData:
+                if '\"' in line:
+                    continue
+                callDataCheck.write(line)
+            callDataCheck.close()
         return
 
+    # if N > 1
     od = {} #open file descriptor
     for n in list(range(0,N)):
         od[n] = open('call_ctr_n/'+ ogFile +'/'+ ogFile +'_'+ str(n) + '.csv', 'w')
@@ -32,6 +39,8 @@ def splitN(src, N):
         # print(ctr + ', Start!')
         callData.readline() #skip header
         for line in callData:
+            if '\"' in line:
+                continue
             l = line.split(',')
             uid = l[1]
             od[hash(uid)%N].write(line)

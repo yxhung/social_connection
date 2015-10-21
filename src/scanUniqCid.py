@@ -15,7 +15,7 @@ ctrs.sort()
 #          'remote_country_code,remote_number_prefix,remote_type,' \
 #          'local_number,local_country_code,local_number_prefix,mcc,mnc,lac,cid'
 
-header = 'mcc,mnc,lac,cid,lat,lon\n'
+header = 'mcc,mnc,lac,cid\n'
 for ctr in ctrs:
     with open('call_ctr_all/'+ ctr) as callData:
         print(ctr + ', Start!')
@@ -29,7 +29,7 @@ for ctr in ctrs:
 
             setCid = mcc+ ','+ mnc+ ','+ lac+ ','+ cid
             cidData.add(setCid)
-    with open('uiqCid/'+ ctr, 'w') as uiqCid:
+    with open('uiqCid2/'+ ctr, 'w') as uiqCid:
         uiqCid.write(header)
         for elt in cidData:
             uiqCid.write(elt)

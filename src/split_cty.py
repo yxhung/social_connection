@@ -13,7 +13,7 @@ with open("country_code_all.txt") as data:
     ctrs = [line[1] for line in reader]
 
 with open('call_all/call_20150501.csv') as calldata:
-        header = calldata.readline() #skip header
+        header = calldata.readline()
 
 # open file for all country f1 = open("cty_cd", w)
 od = {} #open file descriptor
