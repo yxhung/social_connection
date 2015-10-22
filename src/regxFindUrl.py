@@ -4,9 +4,10 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import shutil
+import re
 
 
-os.chdir('../../whoscall/openCellId')
+os.chdir('../../whoscall/openCid')
 
 global dump
 
@@ -26,10 +27,11 @@ url = 'http://opencellid.org/downloads/?apiKey=db112c9c-0b36-4573-85d6-cfff827bb
 html = requests.get(url).text
 soup = BeautifulSoup(html)
 all_links = soup.findAll('a', href=True)
-for link in all_links[2:79]:
-    print(link['href'])
-    url = 'http://opencellid.org'+link['href']
-    download_file(url)
-    fn = link['href'].split('=')[2]
-    save_file(fn)
+for link in all_links:
+    if re.search('cell_towers', link['href']) :
+        print(link['href'])
+        url = 'http://opencellid.org'+link['href']
+        download_file(url)
+        fn = link['href'].split('=')[2]
+        save_file(fn)
 

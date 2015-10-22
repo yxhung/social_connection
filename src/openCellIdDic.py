@@ -9,27 +9,22 @@ def listDirFull(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
 
 # 2. Create the dictionary for cellId to latlon
-cellIdDic = {}
-cellIdFiles = listDirFull('openCellId')
-cellIdFiles.sort()
+cidDic = {}
+cidFiles = listDirFull('openCid')
+cidFiles.sort()
 
 
 start = time.time()
-for file in cellIdFiles:
+for file in cidFiles:
     with open(file) as Data:
         print(Data.readline()) #skip header
-        # i = 0
         for line in Data:
-            # i += 1
-            # if i>10:
-            #     break
-            # print(line,'\n')
             l = line.split(',')
-            (mcc, mnc, lac, cid) = (l[1:5])
+            mcc, mnc, lac, cid = l[1:5]
             (lon, lat) = (l[6:8])
             setCid = mcc+ ','+ mnc+ ','+ lac+ ','+ cid
             setCrd = (lon, lat)
-            cellIdDic[setCid] = setCrd
+            cidDic[setCid] = setCrd
 
             # cellIdDic.setdefault(setCid, []).append(setCrd)
 
@@ -38,6 +33,6 @@ elapsed = done - start
 print(elapsed)
 
 # Writing JSON data
-with open('openCellId/cellIdDic.csv', 'w') as outfile:
-    json.dump(cellIdDic, outfile)
+with open('openCid/openCidDic.csv', 'w') as outfile:
+    json.dump(cidDic, outfile)
 print('Done!')

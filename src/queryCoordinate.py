@@ -10,12 +10,12 @@ def str2Bool(v):
   return v.lower() in ("yes", "true", "t", "1")
 
 # Reading openCellId database
-with open('openCellId/cellIdDic.csv') as infile:
+with open('openCid/openCidDic.csv') as infile:
     cellIdDic = json.load(infile)
 print('Read Dic Done!')
 
 
-global lat, lon
+# global lat, lon
 header = 'mcc,mnc,lac,cid,lat,lon\n'
 cidFiles = os.listdir('uiqCid')
 cidFiles.sort()
@@ -31,18 +31,23 @@ for cidFile in cidFiles:
         # open new file to save the query data
         corData = open('uiqCidCord/'+ cidFile, 'w')
         corData.write(header)
-
+        i = 1
+        j = 1
         for line in cidData:
+            i += 1
             l = line.rstrip('\n').split(',')
             (mcc, mnc, lac, cid) = l
             setCid = mcc+ ','+ mnc+ ','+ lac+ ','+ cid
             # query coordinate
             if cellIdDic.get(setCid) is None:
-                corData.write(setCid + '\n')
+                corData.write(setCid + ',None,None\n')
+                j += 1
                 continue
             setCrd = cellIdDic[setCid]
             lon, lat = setCrd
             corData.write(setCid + ',' + lat + ',' + lon + '\n')
-            # del lon, lat
+
+
+        print(j, i, '\n')
 
         corData.close()
